@@ -8,16 +8,17 @@ export function Counter({ initialCount }: { initialCount: number }) {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const events = new EventSource("/api/events");
-    events.onmessage = (event) => {
+    const interval = setInterval(async () => {
       try {
-        const data = JSON.parse(event.data) as { count: number };
+        const response = await fetch("/api/count", { cache: "no-store" });
+        if (!response.ok) return;
+        const data = (await response.json()) as { count: number };
         setCount(data.count);
       } catch {
-        // ignore malformed events
+        // ignore network hiccups, next poll will retry
       }
-    };
-    return () => events.close();
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   async function updateCount(method: "POST" | "DELETE") {
@@ -25,6 +26,7 @@ export function Counter({ initialCount }: { initialCount: number }) {
     setBusy(true);
     try {
       const response = await fetch("/api/count", { method });
+      if (!response.ok) return;
       const data = (await response.json()) as { count: number };
       setCount(data.count);
     } finally {

@@ -3,6 +3,6 @@ import { getCount } from "@/lib/counter";
 
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  return <Counter initialCount={getCount()} />;
+export default async function Home() {
+  return <Counter initialCount={await getCount()} />;
 }

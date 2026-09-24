@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
-  return Response.json({ count: getCount() });
+  return Response.json({ count: await getCount() });
 }
 
 export async function POST() {
